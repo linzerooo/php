@@ -1,0 +1,5 @@
+<ul>
+    {% for day in days %}
+        <li>{{ day.date|date('l, d F Y') }}</li>
+    {% endfor %}
+</ul>
