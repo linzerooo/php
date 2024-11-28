@@ -1,6 +1,0 @@
-<h1>Добавление оценки для студента {{ student.name }}</h1>
-
-<form action="{{ path('app_grade_add', { id: student.id }) }}" method="post">
-    {{ form_widget(form) }}
-    <button type="submit">Отправить</button>
-</form>
