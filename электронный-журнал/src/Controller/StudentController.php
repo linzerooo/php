@@ -1,20 +1,18 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\Grade;
 use App\Entity\Student;
-use App\Form\GradeType;
-use App\Repository\GradeRepository;
+use App\Entity\Grade;
 use App\Repository\StudentRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class StudentController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/students', name: 'app_student_index')]
     public function index(StudentRepository $studentRepository): Response
     {
         $students = $studentRepository->findAll();
@@ -23,24 +21,25 @@ class StudentController extends AbstractController
         ]);
     }
 
-    #[Route('/grade/{id}/add', name: 'app_grade_add', methods: ['POST'])]
-    public function addGrade(
-        Request $request,
-        Student $student,
-        EntityManagerInterface $em
-    ): Response {
-        $grade = new Grade();
-        $form = $this->createForm(GradeType::class, $grade);
-        $form->handleRequest($request);
+    #[Route('/student/{id}/add-grade', name: 'app_student_add_grade')]
+    public function addGrade(int $id, Request $request, StudentRepository $studentRepository, EntityManagerInterface $entityManager): Response
+    {
+        $student = $studentRepository->find($id);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $grade->setStudent($student);
-            $em->persist($grade);
-            $em->flush();
-
-            return $this->redirectToRoute('app_home');
+        if (!$student) {
+            throw $this->createNotFoundException('Студент не найден');
         }
 
-        return $this->redirectToRoute('app_home');
+        $gradeValue = $request->request->get('grade');
+        if ($gradeValue) {
+            $grade = new Grade();
+            $grade->setGrade((int)$gradeValue);
+            $grade->setStudent($student);
+
+            $entityManager->persist($grade);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_student_index');
     }
 }
