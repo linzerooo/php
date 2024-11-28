@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Электронный журнал</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Студент</th>
+            <th>Оценки</th>
+            <th>Добавить оценку</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>
+                {% for grade in student.grades %}
+                    {{ grade.grade }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+        </tr> 
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
